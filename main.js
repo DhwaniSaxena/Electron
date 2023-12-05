@@ -1,0 +1,32 @@
+const { app, BrowserWindow, ipcMain } = require('electron')
+const path = require('node:path')
+require('update-electron-app')()
+
+const createWindow = () => {
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600,
+	webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    },
+    icon: 'C:/Users/dhwani.saxena/my-electron-app/path/icon.png'
+  })
+
+  win.loadFile('index.html')
+  //win.loadURL('https://www.google.com/')
+}
+
+app.whenReady().then(() => {
+  ipcMain.handle('ping', () => 'pong')
+  createWindow()
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+    }
+  })
+})
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit()
+})
